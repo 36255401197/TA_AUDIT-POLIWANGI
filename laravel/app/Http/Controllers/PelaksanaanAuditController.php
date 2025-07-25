@@ -6,6 +6,9 @@ use App\Models\PelaksanaanAudit;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\APelaksanaanAudit;
+use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\IOFactory;
+
 
 class PelaksanaanAuditController extends Controller
 {
@@ -123,22 +126,73 @@ public function destroy($id)
  
 
     public function simpanTanggapan(Request $request, $id)
-{
-    if (Auth::user()->role !== 'auditor') {
-        abort(403, 'Unauthorized');
+    {
+        if (Auth::user()->role !== 'auditor') {
+            abort(403, 'Unauthorized');
+        }
+
+        $request->validate([
+            'tanggapan_auditor' => 'required|string',
+        ]);
+
+        $data = PelaksanaanAudit::findOrFail($id);
+        $data->update([
+            'tanggapan_auditor' => $request->tanggapan_auditor,
+        ]);
+
+        return back()->with('success', 'Tanggapan auditor berhasil disimpan.');
     }
 
-    $request->validate([
-        'tanggapan_auditor' => 'required|string',
-    ]);
 
-    $data = PelaksanaanAudit::findOrFail($id);
-    $data->update([
-        'tanggapan_auditor' => $request->tanggapan_auditor,
-    ]);
+    public function exportWord()
+    {
+        if (Auth::user()->role !== 'auditor') {
+            abort(403, 'Anda tidak memiliki izin untuk mengakses fitur ini.');
+        }
+        $data = \App\Models\PelaksanaanAudit::all(); 
 
-    return back()->with('success', 'Tanggapan auditor berhasil disimpan.');
-}
+        $phpWord = new PhpWord();
+        $section = $phpWord->addSection();
+
+        $section->addText('Laporan Kertas Kerja Auditor Lapangan', ['bold' => true, 'size' => 16], ['alignment' => 'center']);
+        $section->addTextBreak();
+
+        $table = $section->addTable([
+            'borderSize' => 6,
+            'borderColor' => '999999',
+            'cellMargin' => 80,
+        ]);
+
+
+        $table->addRow();
+        $headers = ['No', 'Standar', 'Indikator', 'Kode', 'Temuan', 'Kepatuhan', 'Tanggapan Auditi', 'Akar Masalah'];
+        foreach ($headers as $header) {
+            $table->addCell(2000, ['bgColor' => '212529'])->addText($header, ['bold' => true, 'color' => 'FFFFFF']);
+        }
+
+
+
+
+        foreach ($data as $i => $item) {
+            $table->addRow();
+            $table->addCell(200)->addText($i + 1);
+            $table->addCell(2000)->addText($item->standar);
+            $table->addCell(4000)->addText($item->indikator);
+            $table->addCell(1000)->addText($item->kode);
+            $table->addCell(2000)->addText($item->temuan ?? '-');
+            $table->addCell(1500)->addText($item->kepatuhan);
+            $table->addCell(2000)->addText($item->tanggapan_auditi ?? '-');
+            $table->addCell(2000)->addText($item->akar_masalah ?? '-');
+        }
+
+        $fileName = 'Laporan-Kertas-Kerja-Auditor.docx';
+        $filePath = storage_path($fileName);
+
+        $writer = IOFactory::createWriter($phpWord, 'Word2007');
+        $writer->save($filePath);
+
+        return response()->download($filePath)->deleteFileAfterSend(true);
+    }
 
 
 }

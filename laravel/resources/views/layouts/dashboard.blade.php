@@ -1,9 +1,7 @@
 @extends('layouts.DashboardAudit.dashboard')
-
 @section('content')
-
-
- 
+<div class="container py-4 px-4">
+    
     <h4>Dashboard Lead Auditor</h4>
 
     <!-- Daftar Audit -->
@@ -100,8 +98,5 @@
         </tbody>
       </table>
     </div>
-  <
-
-
-
+</div>
 @endsection

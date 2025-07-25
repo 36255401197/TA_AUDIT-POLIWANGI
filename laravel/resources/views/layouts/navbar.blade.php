@@ -86,7 +86,7 @@
 									<div class="user-box">
 										<div class="u-img"><img src="../assets/img/profile.jpg" alt="user"></div>
 										<div class="u-text">
-											<h4>Hizrian</h4>
+											<h4>Lead Auditor</h4>
 											<p class="text-muted">hello@themekita.com</p><a href="profile.html" class="btn btn-rounded btn-danger btn-sm">View Profile</a></div>
 										</div>
 									</li>

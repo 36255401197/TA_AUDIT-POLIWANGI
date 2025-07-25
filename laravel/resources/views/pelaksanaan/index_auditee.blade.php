@@ -3,6 +3,14 @@
 @section('content')
 <div class="container py-4 px-4">
     <h4 class="mb-3 mt-2">Pelaksanaan Audit</h4>
+    @if(Auth::user()->role === 'auditor')
+        <div class="mb-3 d-flex justify-content-end">
+            <a href="{{ route('pelaksanaan.exportWord') }}" class="btn btn-success">
+                <i class="bi bi-file-earmark-word"></i> Ekspor ke Word
+            </a>
+        </div>
+    @endif
+
 
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">

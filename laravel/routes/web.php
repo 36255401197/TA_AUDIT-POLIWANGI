@@ -102,7 +102,8 @@ Route::put('/dashboard/{id}', [DashboardController::class, 'update'])->name('das
 Route::delete('/dashboard/{id}', [DashboardController::class, 'destroy'])->name('dashboard.destroy');
 
 Route::get('/audit/pelaksanaan_audit', [PelaksanaanAuditController::class, 'index'])->name('pelaksanaan');
-Route::resource('pelaksanaan', PelaksanaanAuditController::class);
+// Route::resource('pelaksanaan', PelaksanaanAuditController::class);
+Route::resource('pelaksanaan', PelaksanaanAuditController::class)->except(['show']);
 
 Route::delete('/pelaksanaan/{id}', [PelaksanaanAuditController::class, 'destroy'])->name('pelaksanaan.destroy');
 
@@ -149,3 +150,5 @@ Route::prefix('audit')->group(function () {
     Route::delete('/pelaporan_hasil_audit/{id}', [PelaporanHasilController::class, 'destroy'])->name('pelaporan.destroy');
 });
 
+Route::get('/pelaksanaan/export-word', [PelaksanaanAuditController::class, 'exportWord'])
+    ->name('pelaksanaan.exportWord');
